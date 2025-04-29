@@ -60,3 +60,24 @@ cd ~/quadruped_lidar_relocalization_ws
 git clone --recursive https://github.com/hyyyyyyz/quadruped_hurricane2025_relocalization.git src/quadruped_hurricane2025_relocalization
 ```
 
+#### 1.1.3 Build
+
+
+
+```
+rosdep install -r --from-paths src --ignore-src --rosdistro $ROS_DISTRO -y
+```
+
+
+
+```
+colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
+```
+
+
+
+> Note
+>
+> 推荐使用 --symlink-install 选项来构建你的工作空间，因为 quadruped_hurricane2025_relocalization 广泛使用了 launch.py 文件和 YAML 文件。这个构建参数会为那些非编译的源文件使用符号链接，这意味着当你调整参数文件时，不需要反复重建，只需要重新启动即可。
+
+
