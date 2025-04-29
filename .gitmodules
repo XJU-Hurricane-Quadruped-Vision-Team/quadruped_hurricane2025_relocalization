@@ -1,0 +1,9 @@
+[submodule "livox_ros_driver2"]
+	path = livox_ros_driver2
+	url = https://github.com/hyyyyyyz/livox_ros_driver2
+[submodule "point_lio"]
+	path = point_lio
+	url = https://github.com/hyyyyyyz/point_lio
+[submodule "small_gicp_relocalization"]
+	path = small_gicp_relocalization
+	url = https://github.com/hyyyyyyz/small_gicp_relocalization
