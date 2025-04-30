@@ -37,7 +37,6 @@ def generate_launch_description():
     namespace = LaunchConfiguration("namespace")
     log_level = LaunchConfiguration("log_level")
     prior_pcd_file = LaunchConfiguration("prior_pcd_file")
-    mid360_config_file = LaunchConfiguration("mid360_config_file")
     params_file = LaunchConfiguration("params_file")
     rviz_config_file = LaunchConfiguration("rviz_config_file")
     use_rviz = LaunchConfiguration("use_rviz")
@@ -62,14 +61,6 @@ def generate_launch_description():
             bringup_dir, "pcd", "work_station.pcd"
         ),
         description="Full path to prior pcd file to load",
-    )
-
-    declare_mid360_config_file_cmd = DeclareLaunchArgument(
-        "mid360_config_file",
-        default_value=os.path.join(
-            bringup_dir, "config", "MID360_config.json"
-        ),
-        description="Full path to mid360 config file to load",
     )
 
     declare_params_file_cmd = DeclareLaunchArgument(
@@ -103,16 +94,13 @@ def generate_launch_description():
     )
 
     # Nodes to start
-    livox_driver_node = Node(
-        package='livox_ros_driver2',
-        executable='livox_ros_driver2_node',
-        name='livox_lidar_publisher',
+    livox_ros_driver2_node = Node(
+        package="livox_ros_driver2",
+        executable="livox_ros_driver2_node",
+        name="livox_ros_driver2",
+        output="screen",
         namespace=namespace,
-        output='screen',
-        parameters=[
-            configured_params,
-            {"user_config_path": mid360_config_file}
-        ],
+        parameters=[configured_params],
     )
 
     point_lio_node = Node(
@@ -129,35 +117,35 @@ def generate_launch_description():
         arguments=["--ros-args", "--log-level", log_level],
     )
 
-    # frame_republisher_node = Node(
-    #     package='frame_republisher',
-    #     executable='frame_republisher_node',
-    #     name='frame_republisher',
-    #     namespace=namespace,
-    #     output='screen',
-    #     parameters=[configured_params],
-    # )
+    frame_republisher_node = Node(
+        package='frame_republisher',
+        executable='frame_republisher_node',
+        name='frame_republisher',
+        namespace=namespace,
+        output='screen',
+        parameters=[configured_params],
+    )
 
-    # small_gicp_relocalization_node = Node(
-    #     package="small_gicp_relocalization",
-    #     executable="small_gicp_relocalization_node",
-    #     namespace=namespace,
-    #     output="screen",
-    #     remappings=remappings,
-    #     parameters=[
-    #         configured_params,
-    #         {"prior_pcd_file": prior_pcd_file}
-    #     ],
-    # )
+    small_gicp_relocalization_node = Node(
+        package="small_gicp_relocalization",
+        executable="small_gicp_relocalization_node",
+        namespace=namespace,
+        output="screen",
+        remappings=remappings,
+        parameters=[
+            configured_params,
+            {"prior_pcd_file": prior_pcd_file}
+        ],
+    )
 
-    # pose_interface_node = Node(
-    #     package='pose_interface',
-    #     executable='pose_interface',
-    #     name='pose_interface',
-    #     namespace=namespace,
-    #     output='screen',
-    #     parameters=[configured_params],
-    # )
+    pose_interface_node = Node(
+        package='pose_interface',
+        executable='pose_interface',
+        name='pose_interface',
+        namespace=namespace,
+        output='screen',
+        parameters=[configured_params],
+    )
 
     rviz_cmd = Node(
         package='rviz2',
@@ -175,16 +163,15 @@ def generate_launch_description():
     ld.add_action(declare_namespace)
     ld.add_action(declare_log_level_cmd)
     ld.add_action(declare_prior_pcd_file_cmd)
-    ld.add_action(declare_mid360_config_file_cmd)
     ld.add_action(declare_params_file_cmd)
     ld.add_action(declare_rviz_config_file_cmd)
     ld.add_action(declare_use_rviz_cmd)
 
-    ld.add_action(livox_driver_node)
+    ld.add_action(livox_ros_driver2_node)
     ld.add_action(point_lio_node)
-    # ld.add_action(frame_republisher_node)
-    # ld.add_action(small_gicp_relocalization_node)
-    # ld.add_action(pose_interface_node)
+    ld.add_action(frame_republisher_node)
+    ld.add_action(small_gicp_relocalization_node)
+    ld.add_action(pose_interface_node)
     ld.add_action(rviz_cmd)
 
     return ld
