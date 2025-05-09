@@ -7,3 +7,9 @@
 [submodule "small_gicp_relocalization"]
 	path = small_gicp_relocalization
 	url = https://github.com/hyyyyyyz/small_gicp_relocalization
+[submodule "FAST_LIO"]
+	path = FAST_LIO
+	url = https://github.com/hyyyyyyz/FAST_LIO
+[submodule "imu_tools"]
+	path = imu_tools
+	url = https://github.com/hyyyyyyz/imu_tools

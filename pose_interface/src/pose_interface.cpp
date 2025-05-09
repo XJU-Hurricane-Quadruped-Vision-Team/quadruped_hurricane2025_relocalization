@@ -49,9 +49,9 @@ namespace pose_interface
             double y = tf_stamped.transform.translation.y;
             double z = tf_stamped.transform.translation.z;
 
-            RCLCPP_INFO(this->get_logger(),
-                        "[Global pose] : x=%.3f y=%.3f z=%.3f",
-                        x, y, z);
+            // RCLCPP_INFO(this->get_logger(),
+            //             "[Global pose] : x=%.3f y=%.3f z=%.3f",
+            //             x, y, z);
 
             nav_msgs::msg::Odometry pose_msg;
             pose_msg.header.stamp = tf_stamped.header.stamp;

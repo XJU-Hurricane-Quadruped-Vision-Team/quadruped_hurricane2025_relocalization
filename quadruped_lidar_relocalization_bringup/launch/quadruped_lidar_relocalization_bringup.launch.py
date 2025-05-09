@@ -36,6 +36,7 @@ def generate_launch_description():
     # Create the launch configuration variables    
     namespace = LaunchConfiguration("namespace")
     log_level = LaunchConfiguration("log_level")
+    lio = LaunchConfiguration("lio")
     prior_pcd_file = LaunchConfiguration("prior_pcd_file")
     params_file = LaunchConfiguration("params_file")
     rviz_config_file = LaunchConfiguration("rviz_config_file")
@@ -53,6 +54,12 @@ def generate_launch_description():
         "log_level",
         default_value="info",
         description="Logging level",
+    )
+
+    declare_lio_cmd = DeclareLaunchArgument(
+        "lio",
+        default_value="fast_lio",
+        description="Whether to use point_lio or fast_lio",
     )
 
     declare_prior_pcd_file_cmd = DeclareLaunchArgument(
@@ -103,6 +110,17 @@ def generate_launch_description():
         parameters=[configured_params],
     )
 
+    imu_complementary_filter_node = Node(
+        package='imu_complementary_filter',
+        executable='complementary_filter_node',
+        name='complementary_filter_gain_node',
+        output='screen',
+        parameters=[configured_params],
+        remappings=[
+            ("/imu/data_raw", "/livox/imu")
+        ]
+    )
+
     point_lio_node = Node(
         package="point_lio",
         executable="pointlio_mapping",
@@ -115,7 +133,18 @@ def generate_launch_description():
             {"prior_pcd.prior_pcd_map_path": prior_pcd_file},
         ],
         arguments=["--ros-args", "--log-level", log_level],
+        condition=IfCondition(lio == "point_lio")
     )
+
+    fast_lio_node = Node(
+        package='fast_lio',
+        executable='fastlio_mapping',
+        name='fast_lio',
+        parameters=[configured_params],
+        output='screen',
+        condition=IfCondition(lio == "fast_lio")
+    )
+
 
     frame_republisher_node = Node(
         package='frame_republisher',
@@ -147,6 +176,15 @@ def generate_launch_description():
         parameters=[configured_params],
     )
 
+    quadruped_task_manager_node = Node(
+        package='quadruped_task_manager',
+        executable='quadruped_task_manager',
+        name='quadruped_task_manager',
+        namespace=namespace,
+        output='screen',
+        parameters=[configured_params],
+    )
+
     rviz_cmd = Node(
         package='rviz2',
         executable='rviz2',
@@ -162,16 +200,20 @@ def generate_launch_description():
 
     ld.add_action(declare_namespace)
     ld.add_action(declare_log_level_cmd)
+    ld.add_action(declare_lio_cmd)
     ld.add_action(declare_prior_pcd_file_cmd)
     ld.add_action(declare_params_file_cmd)
     ld.add_action(declare_rviz_config_file_cmd)
     ld.add_action(declare_use_rviz_cmd)
 
     ld.add_action(livox_ros_driver2_node)
+    ld.add_action(imu_complementary_filter_node)
     ld.add_action(point_lio_node)
+    ld.add_action(fast_lio_node)
     ld.add_action(frame_republisher_node)
     ld.add_action(small_gicp_relocalization_node)
     ld.add_action(pose_interface_node)
+    ld.add_action(quadruped_task_manager_node)
     ld.add_action(rviz_cmd)
 
     return ld

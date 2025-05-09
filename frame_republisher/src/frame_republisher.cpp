@@ -23,8 +23,13 @@ FrameRepublisher::FrameRepublisher()
 : Node("frame_republisher")
 {
   // Declare and get frame parameters
-  this->declare_parameter<std::string>("odom_frame", "odom");
-  this->declare_parameter<std::string>("base_frame", "base_link");
+  this->declare_parameter<std::string>("state_estimation_topic", "");
+  this->declare_parameter<std::string>("registered_scan_topic", "");
+  this->declare_parameter<std::string>("odom_frame", "");
+  this->declare_parameter<std::string>("base_frame", "");
+
+  this->get_parameter("state_estimation_topic", state_estimation_topic_);
+  this->get_parameter("registered_scan_topic", registered_scan_topic_);
   this->get_parameter("odom_frame", odom_frame_);
   this->get_parameter("base_frame", base_frame_);
 
@@ -39,11 +44,11 @@ FrameRepublisher::FrameRepublisher()
 
   // Subscriptions: republish to match upstream rates
   sub_odom_ = this->create_subscription<nav_msgs::msg::Odometry>(
-    "/aft_mapped_to_init", rclcpp::QoS(10),
+    state_estimation_topic_, rclcpp::QoS(10),
     std::bind(&FrameRepublisher::odomCallback, this, std::placeholders::_1));
 
   sub_cloud_ = this->create_subscription<sensor_msgs::msg::PointCloud2>(
-    "/cloud_registered", rclcpp::QoS(10),
+    registered_scan_topic_, rclcpp::QoS(10),
     std::bind(&FrameRepublisher::pointCloudCallback, this, std::placeholders::_1));
 }
 

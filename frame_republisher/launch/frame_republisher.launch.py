@@ -27,6 +27,8 @@ def generate_launch_description():
         output='screen',
         parameters=[
             {
+                'state_estimation_topic': 'aft_mapped_to_init',
+                'registered_scan_topic': 'cloud_registered',
                 'odom_frame': 'odom',
                 'base_frame': 'base_link'
             }
