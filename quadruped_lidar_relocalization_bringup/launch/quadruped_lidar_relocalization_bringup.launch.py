@@ -145,7 +145,6 @@ def generate_launch_description():
         condition=IfCondition(lio == "fast_lio")
     )
 
-
     frame_republisher_node = Node(
         package='frame_republisher',
         executable='frame_republisher_node',
